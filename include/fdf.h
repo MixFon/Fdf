@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 12:14:10 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/20 19:13:35 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/21 15:39:20 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,34 @@
 # define FDF_H
 
 #include <unistd.h>
-#include "../ft_printf/ft_printf.h"
-#include "get_next_line.h"
+#include "../libft/libft.h"
 #include <fcntl.h>
 #include <mlx.h>
 
-#define	WIDTH 1024
-#define	HEIGHT 600
+#define	WIDTH 1920
+#define	HEIGHT 1080
+
+#define	LET 10
+
+# define ABS(N) ((N<0)?(-N):(N))
 
 typedef struct	s_fdf
 {
 	void		*mlx_ptr;
 	void		*win_ptr;
 	int			**map;
+	char		*str;
+	char		**arr;
+	int			col;
+	int			row;
 }				t_fdf;
+
+typedef struct		s_coor
+{
+	int				x;
+	int				y;
+}					t_coor;
+
 /*
 ** File count_args.c
 */
