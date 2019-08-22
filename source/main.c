@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 11:22:14 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/21 15:39:17 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/22 16:28:57 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,23 +205,30 @@ void	ft_draw_line(void *mlx_ptr, void *win_ptr, t_coor point1,
 		}
 	}
 }
+
 void	print_two_line(t_fdf *fdf, int i, int j)
 {
 	t_coor	start;
 	t_coor	end;
 
-	start.x = j * LET;
-	start.y = i * LET;
+	//start.x = j * LET;
+	//start.y = i * LET;
+	start.x = X(j * LET, i * LET, 45) + WIDTH / 2;
+	start.y = Y(j * LET, i * LET, 45) + HEIGHT / 2;
 	if (i + 1 < fdf->row)
 	{
-		end.x = j * LET;
-		end.y = (i + 1) * LET;
+		//end.x = j * LET;
+		//end.y = (i + 1) * LET;
+		end.x = X(j * LET, (i + 1) * LET, 45) + WIDTH / 2;
+		end.y = Y(j * LET, (i + 1) * LET, 45) + HEIGHT / 2;
 		ft_draw_line(fdf->mlx_ptr, fdf->win_ptr, start, end);
 	}
 	if (j + 1 < fdf->col)
 	{
-		end.x = (j + 1) * LET ;
-		end.y = i * LET;
+		//end.x = (j + 1) * LET ;
+		//end.y = i * LET;
+		end.x = X((j + 1) * LET, i * LET, 45) + WIDTH / 2;
+		end.y = Y((j + 1) * LET, i * LET, 45) + HEIGHT / 2;
 		ft_draw_line(fdf->mlx_ptr, fdf->win_ptr, start, end);
 	}
 }
@@ -246,6 +253,28 @@ void	put_map(t_fdf *fdf)
 	}
 }
 
+void	put_line(t_fdf *fdf)
+{
+	t_coor	start;
+	t_coor	end;
+	double	deg;
+
+	ft_printf("%f\n", cos(DEG(60)));
+	start.x = 0;
+	start.y = 0;
+	end.x = 100;
+	end.y = 200;
+	ft_draw_line(fdf->mlx_ptr, fdf->win_ptr, start, end);
+	start.x = X(0, 0, 45);
+	start.y = Y(0, 0, 45);
+	end.x = X(100, 200, 45);
+	end.y = Y(100, 200, 45);
+	//end.x = 212;
+	//end.y = 70;
+	ft_printf("x = {%f} y = {%f}\n", end.x, end.y);
+	ft_draw_line(fdf->mlx_ptr, fdf->win_ptr, start, end);
+}
+
 int		main(int ac, char **av)
 {
 	t_fdf fdf;
@@ -254,6 +283,7 @@ int		main(int ac, char **av)
 	init(&fdf);
 	mlx_key_hook(fdf.win_ptr, exit_key, (void*)0);
 	read_map(&fdf, ac, av);
+	//put_line(&fdf);
 	put_map(&fdf);
 	mlx_loop(fdf.mlx_ptr);
 	return (0);

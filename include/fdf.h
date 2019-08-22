@@ -6,22 +6,27 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 12:14:10 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/21 15:39:20 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/22 16:28:56 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FDF_H
 # define FDF_H
 
-#include <unistd.h>
-#include "../libft/libft.h"
-#include <fcntl.h>
-#include <mlx.h>
+# include <unistd.h>
+# include "../libft/libft.h"
+# include <fcntl.h>
+# include <mlx.h>
+# include <math.h>
 
 #define	WIDTH 1920
 #define	HEIGHT 1080
 
-#define	LET 10
+#define	LET 50
+#define	DEB 0.7
+#define	DEG(N) M_PI*N/180
+#define X(A, B, C) (int)(A*cos(DEG(C))+B*sin(DEG(C)))
+#define Y(A, B, C) (int)(-A*sin(DEG(C))+B*cos(DEG(C)))
 
 # define ABS(N) ((N<0)?(-N):(N))
 
@@ -38,8 +43,8 @@ typedef struct	s_fdf
 
 typedef struct		s_coor
 {
-	int				x;
-	int				y;
+	double			x;
+	double			y;
 }					t_coor;
 
 /*
