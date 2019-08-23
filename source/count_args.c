@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 18:36:23 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/21 15:39:19 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/23 15:40:10 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,13 @@ void	init(t_fdf *fdf)
 {
 	fdf->row = 0;
 	fdf->col = 0;
+	fdf->endian = 0;
+	fdf->size_adr = W_IMG;
+	fdf->bits_adr = 4;
+	fdf->color = -1;
 	fdf->str = NULL;
 	fdf->mlx_ptr = mlx_init();
+	fdf->img_ptr = mlx_new_image(fdf->mlx_ptr, WIDTH, HEIGHT);
 	fdf->win_ptr = mlx_new_window(fdf->mlx_ptr, WIDTH, HEIGHT, "Hello fdf");
 }
 

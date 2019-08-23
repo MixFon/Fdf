@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 11:22:14 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/22 16:28:57 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/23 15:40:46 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,19 @@ void	read_map(t_fdf *fdf, int ac, char **av)
 	close(fd);
 }
 
+void	put_pixel_adr(t_fdf *fdf, int x, int y)
+{
+	int i;
+
+	i = (x * fdf->bits_adr / 8) + (y * fdf->size_adr);
+	if (i < 0)
+		return ;
+	fdf->data_adr[i] = fdf->color;
+	fdf->data_adr[++i] = fdf->color >> 8;
+	fdf->data_adr[++i] = fdf->color >> 16;
+	fdf->data_adr[++i] = 0;
+}
+
 void	ft_draw_line_source(t_coor *delta, t_coor *sign, t_coor point1,
 		t_coor point2)
 {
@@ -178,20 +191,22 @@ void	ft_draw_line_source(t_coor *delta, t_coor *sign, t_coor point1,
 ** Функция рисует линию.
 */
 
-void	ft_draw_line(void *mlx_ptr, void *win_ptr, t_coor point1,
+void	ft_draw_line(t_fdf *fdf, t_coor point1,
 		t_coor point2)
 {
-	t_coor delta;
-	t_coor	sign;
+	t_coor		delta;
+	t_coor		sign;
 	int		error;
 	int		error2;
 
 	ft_draw_line_source(&delta, &sign, point1, point2);
 	error = delta.x - delta.y;
-	mlx_pixel_put(mlx_ptr, win_ptr, point2.x, point2.y, 0xBF2956);
+	//mlx_pixel_put(mlx_ptr, win_ptr, point2.x, point2.y, 0xBF2956);
+	put_pixel_adr(fdf, point2.x, point2.y);
 	while (point1.x != point2.x || point1.y != point2.y)
 	{
-		mlx_pixel_put(mlx_ptr, win_ptr, point1.x, point1.y, 0xBF2956);
+		//mlx_pixel_put(mlx_ptr, win_ptr, point1.x, point1.y, 0xBF2956);
+		put_pixel_adr(fdf, point1.x, point1.y);
 		error2 = error * 2;
 		if (error2 > -delta.y)
 		{
@@ -213,23 +228,25 @@ void	print_two_line(t_fdf *fdf, int i, int j)
 
 	//start.x = j * LET;
 	//start.y = i * LET;
-	start.x = X(j * LET, i * LET, 45) + WIDTH / 2;
-	start.y = Y(j * LET, i * LET, 45) + HEIGHT / 2;
+	start.x = X(j * LET, i * LET, 45);
+	start.y = Y(j * LET, i * LET, 45);
 	if (i + 1 < fdf->row)
 	{
 		//end.x = j * LET;
 		//end.y = (i + 1) * LET;
-		end.x = X(j * LET, (i + 1) * LET, 45) + WIDTH / 2;
-		end.y = Y(j * LET, (i + 1) * LET, 45) + HEIGHT / 2;
-		ft_draw_line(fdf->mlx_ptr, fdf->win_ptr, start, end);
+		end.x = X(j * LET, (i + 1) * LET, 45);
+		end.y = Y(j * LET, (i + 1) * LET, 45);
+		ft_draw_line(fdf, start, end);
+		//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
 	}
 	if (j + 1 < fdf->col)
 	{
 		//end.x = (j + 1) * LET ;
 		//end.y = i * LET;
-		end.x = X((j + 1) * LET, i * LET, 45) + WIDTH / 2;
-		end.y = Y((j + 1) * LET, i * LET, 45) + HEIGHT / 2;
-		ft_draw_line(fdf->mlx_ptr, fdf->win_ptr, start, end);
+		end.x = X((j + 1) * LET, i * LET, 45);
+		end.y = Y((j + 1) * LET, i * LET, 45);
+		ft_draw_line(fdf, start, end);
+		//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
 	}
 }
 
@@ -239,18 +256,18 @@ void	print_two_line(t_fdf *fdf, int i, int j)
 
 void	put_map(t_fdf *fdf)
 {
-	int	**map;
 	int	i;
 	int	j;
 
-	map = fdf->map;
 	i = -1;
+	ft_putendl("Hello");
 	while (++i < fdf->row)
 	{
 		j = -1;
 		while (++j < fdf->col)
 			print_two_line(fdf, i, j);
 	}
+	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 0, 0);
 }
 
 void	put_line(t_fdf *fdf)
@@ -264,7 +281,7 @@ void	put_line(t_fdf *fdf)
 	start.y = 0;
 	end.x = 100;
 	end.y = 200;
-	ft_draw_line(fdf->mlx_ptr, fdf->win_ptr, start, end);
+	ft_draw_line(fdf, start, end);
 	start.x = X(0, 0, 45);
 	start.y = Y(0, 0, 45);
 	end.x = X(100, 200, 45);
@@ -272,7 +289,26 @@ void	put_line(t_fdf *fdf)
 	//end.x = 212;
 	//end.y = 70;
 	ft_printf("x = {%f} y = {%f}\n", end.x, end.y);
-	ft_draw_line(fdf->mlx_ptr, fdf->win_ptr, start, end);
+	ft_draw_line(fdf, start, end);
+	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
+}
+
+
+void	work_image(t_fdf *fdf)
+{
+	char	*adr;	
+	int		i;
+	int		j;
+
+	j = 0;
+	fdf->data_adr = mlx_get_data_addr(fdf->img_ptr,
+			&fdf->bits_adr, &fdf->size_adr, &fdf->endian);
+ft_printf("adr ={%s},bits =[%d], size =[%d], en = [%d]\n", fdf->data_adr, fdf->bits_adr, fdf->size_adr, fdf->endian);
+	while (++j < 100)	
+	{
+		put_pixel_adr(fdf, j, j);
+	}
+	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
 }
 
 int		main(int ac, char **av)
@@ -283,8 +319,23 @@ int		main(int ac, char **av)
 	init(&fdf);
 	mlx_key_hook(fdf.win_ptr, exit_key, (void*)0);
 	read_map(&fdf, ac, av);
-	//put_line(&fdf);
+	work_image(&fdf);
+	put_line(&fdf);
 	put_map(&fdf);
 	mlx_loop(fdf.mlx_ptr);
 	return (0);
 }
+/*
+	while (++i < 8000)
+	{
+		if (i % 4 == 0)
+			*temp = 'B';
+		else  if (i % 4 == 1)
+			*temp = 'G';
+		else  if (i % 4 == 2)
+			*temp = 1;
+		else  if (i % 4 == 3)
+			*temp = 0;
+		temp++;
+	}
+*/
