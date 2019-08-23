@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 12:14:10 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/23 14:49:01 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/23 19:59:55 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,12 @@
 #define	W_IMG 1000
 #define	H_IMG 500
 
-#define	LET 10
-#define	DEB 0.7
+#define	LET 50
+#define	ANGLE 90
 #define	DEG(N) M_PI*N/180
-#define X(A, B, C) (int)(A*cos(DEG(C))+B*sin(DEG(C)))
-#define Y(A, B, C) (int)(-A*sin(DEG(C))+B*cos(DEG(C)))
+#define	CON 0
+#define X(A, B, C) (int)((A+CON)*cos(DEG(C))+(B+CON)*sin(DEG(C)))
+#define Y(A, B, C) (int)(-(A+CON)*sin(DEG(C))+(B+CON)*cos(DEG(C)))
 
 # define ABS(N) ((N<0)?(-N):(N))
 
@@ -47,13 +48,14 @@ typedef struct	s_fdf
 	int			bits_adr;
 	int			size_adr;
 	int			endian;
+	int			angle;
 	int			color;
 }				t_fdf;
 
 typedef struct		s_coor
 {
-	double			x;
-	double			y;
+	int			x;
+	int			y;
 }					t_coor;
 
 /*
@@ -61,7 +63,10 @@ typedef struct		s_coor
 */
 void	init(t_fdf *fdf);
 void	sys_err(char *err);
-int		exit_key(int key);
+int		press_key(int key, t_fdf *fdf);
 void	count_args(int ac, char **av);
-
+/*
+** File count_args.c
+*/
+void	put_map(t_fdf *fdf);
 #endif

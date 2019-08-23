@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 11:22:14 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/23 15:40:46 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/23 19:55:13 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ void	read_map(t_fdf *fdf, int ac, char **av)
 	working_string(fdf);
 	write_map_int(fdf);
 	print_map(fdf);
-	dell_map(fdf);
+	//dell_map(fdf);
 	close(fd);
 }
 
@@ -170,7 +170,7 @@ void	put_pixel_adr(t_fdf *fdf, int x, int y)
 	int i;
 
 	i = (x * fdf->bits_adr / 8) + (y * fdf->size_adr);
-	if (i < 0)
+	if (i < 0 || i > WIDTH * 4 * HEIGHT)
 		return ;
 	fdf->data_adr[i] = fdf->color;
 	fdf->data_adr[++i] = fdf->color >> 8;
@@ -221,6 +221,17 @@ void	ft_draw_line(t_fdf *fdf, t_coor point1,
 	}
 }
 
+static void iso(int *x, int *y, int z)
+{
+    int previous_x;
+    int previous_y;
+
+    previous_x = *x;
+    previous_y = *y;
+    *x = (previous_x - previous_y) * cos(0.523599);
+    *y = (-z * 5 ) + (previous_x + previous_y) * sin(0.523599);
+}
+
 void	print_two_line(t_fdf *fdf, int i, int j)
 {
 	t_coor	start;
@@ -228,23 +239,27 @@ void	print_two_line(t_fdf *fdf, int i, int j)
 
 	//start.x = j * LET;
 	//start.y = i * LET;
-	start.x = X(j * LET, i * LET, 45);
-	start.y = Y(j * LET, i * LET, 45);
-	if (i + 1 < fdf->row)
+	start.x = X(j * LET, i * LET, fdf->angle) + (WIDTH / 2);
+	start.y = Y(j * LET, i * LET, fdf->angle) + (HEIGHT / 2);
+	//ft_printf("1 = {%d}, 2 = [%d]\n",i + (fdf->row / 2), j + (fdf->col / 2));
+	iso(&(start.x), &(start.y), fdf->map[i + (fdf->row / 2)][j + (fdf->col / 2)]);
+	if (i + 1 + fdf->row / 2 < fdf->row)
 	{
 		//end.x = j * LET;
 		//end.y = (i + 1) * LET;
-		end.x = X(j * LET, (i + 1) * LET, 45);
-		end.y = Y(j * LET, (i + 1) * LET, 45);
+		end.x = X(j * LET, (i + 1) * LET, fdf->angle) + (WIDTH / 2);
+		end.y = Y(j * LET, (i + 1) * LET, fdf->angle) + (HEIGHT / 2);
+		iso(&(end.x), &(end.y), fdf->map[i + 1 + (fdf->row / 2)][j + (fdf->col / 2)]);
 		ft_draw_line(fdf, start, end);
 		//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
 	}
-	if (j + 1 < fdf->col)
+	if (j + 1 + fdf->col / 2 < fdf->col)
 	{
 		//end.x = (j + 1) * LET ;
 		//end.y = i * LET;
-		end.x = X((j + 1) * LET, i * LET, 45);
-		end.y = Y((j + 1) * LET, i * LET, 45);
+		end.x = X((j + 1) * LET, i * LET, fdf->angle) + (WIDTH / 2);
+		end.y = Y((j + 1) * LET, i * LET, fdf->angle) + (HEIGHT / 2);
+		iso(&(end.x), &(end.y), fdf->map[i + (fdf->row / 2)][j + 1 + (fdf->col / 2)]);
 		ft_draw_line(fdf, start, end);
 		//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
 	}
@@ -260,12 +275,11 @@ void	put_map(t_fdf *fdf)
 	int	j;
 
 	i = -1;
-	ft_putendl("Hello");
 	while (++i < fdf->row)
 	{
 		j = -1;
 		while (++j < fdf->col)
-			print_two_line(fdf, i, j);
+			print_two_line(fdf, i - (fdf->row / 2), j - (fdf->col / 2));
 	}
 	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 0, 0);
 }
@@ -290,25 +304,7 @@ void	put_line(t_fdf *fdf)
 	//end.y = 70;
 	ft_printf("x = {%f} y = {%f}\n", end.x, end.y);
 	ft_draw_line(fdf, start, end);
-	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
-}
-
-
-void	work_image(t_fdf *fdf)
-{
-	char	*adr;	
-	int		i;
-	int		j;
-
-	j = 0;
-	fdf->data_adr = mlx_get_data_addr(fdf->img_ptr,
-			&fdf->bits_adr, &fdf->size_adr, &fdf->endian);
-ft_printf("adr ={%s},bits =[%d], size =[%d], en = [%d]\n", fdf->data_adr, fdf->bits_adr, fdf->size_adr, fdf->endian);
-	while (++j < 100)	
-	{
-		put_pixel_adr(fdf, j, j);
-	}
-	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
+	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 0, 0);
 }
 
 int		main(int ac, char **av)
@@ -317,11 +313,10 @@ int		main(int ac, char **av)
 
 	ft_printf("ac = {%d}\n", ac);
 	init(&fdf);
-	mlx_key_hook(fdf.win_ptr, exit_key, (void*)0);
+	mlx_key_hook(fdf.win_ptr, press_key, &fdf);
 	read_map(&fdf, ac, av);
-	work_image(&fdf);
-	put_line(&fdf);
-	put_map(&fdf);
+	//put_line(&fdf);
+	//put_map(&fdf);
 	mlx_loop(fdf.mlx_ptr);
 	return (0);
 }
