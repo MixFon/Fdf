@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 11:22:14 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/23 20:22:29 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/26 18:02:19 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,18 +160,24 @@ void	read_map(t_fdf *fdf, int ac, char **av)
 	one_big_string(fdf, fd);
 	working_string(fdf);
 	write_map_int(fdf);
+	fdf->row_2 = fdf->row / 2;
+	fdf->col_2 = fdf->col / 2;
 	print_map(fdf);
 	//dell_map(fdf);
 	close(fd);
 }
 
+/*
+** Функция рисует линию.
+*/
+
 void	put_pixel_adr(t_fdf *fdf, int x, int y)
 {
 	int i;
 
-	i = (x * fdf->bits_adr / 8) + (y * fdf->size_adr);
-	if (i < 0 || i > WIDTH * 4 * HEIGHT)
+	if (x >= WIDTH || y >= HEIGHT || x <= 0 || y <= 0)
 		return ;
+	i = (x * fdf->bits_adr / 8) + (y * fdf->size_adr);
 	fdf->data_adr[i] = fdf->color;
 	fdf->data_adr[++i] = fdf->color >> 8;
 	fdf->data_adr[++i] = fdf->color >> 16;
@@ -221,16 +227,24 @@ void	ft_draw_line(t_fdf *fdf, t_coor point1,
 	}
 }
 
-static void iso(int *x, int *y, int z)
-{
-    int previous_x;
-    int previous_y;
+/*
+** Пересчитывает координаты для идомутрического вида.
+*/
 
-    previous_x = *x;
-    previous_y = *y;
-    *x = (previous_x - previous_y) * cos(0.523599);
-    *y = (-z * 5 ) + (previous_x + previous_y) * sin(0.523599);
+static void iso(t_fdf *fdf, int *x, int *y, int z)
+{
+    int prev_x;
+    int prev_y;
+
+    prev_x = *x;
+    prev_y = *y;
+    *x = (prev_x - prev_y) * cos(0.523599) + (WIDTH / 2) + fdf->dx;
+    *y = (-z * 1) + (prev_x + prev_y) * sin(0.523599) + (HEIGHT / 2) + fdf->dy;
 }
+
+/*
+** Рисует две линии матрицы, горизонтально вправо и вертикально вниз.
+*/
 
 void	print_two_line(t_fdf *fdf, int i, int j)
 {
@@ -239,27 +253,63 @@ void	print_two_line(t_fdf *fdf, int i, int j)
 
 	//start.x = j * LET;
 	//start.y = i * LET;
-	start.x = X(j * LET, i * LET, fdf->angle) + (WIDTH / 2);
-	start.y = Y(j * LET, i * LET, fdf->angle) + (HEIGHT / 2);
+	start.x = X(j, i, fdf->alfa);
+	start.y = Y(j, i, fdf->alfa);
 	//ft_printf("1 = {%d}, 2 = [%d]\n",i + (fdf->row / 2), j + (fdf->col / 2));
-	iso(&(start.x), &(start.y), fdf->map[i + (fdf->row / 2)][j + (fdf->col / 2)]);
-	if (i + 1 + fdf->row / 2 < fdf->row)
+	iso(fdf, &(start.x), &(start.y), fdf->map[i][j]);
+	if (i + 1 < fdf->row)
 	{
 		//end.x = j * LET;
 		//end.y = (i + 1) * LET;
-		end.x = X(j * LET, (i + 1) * LET, fdf->angle) + (WIDTH / 2);
-		end.y = Y(j * LET, (i + 1) * LET, fdf->angle) + (HEIGHT / 2);
-		iso(&(end.x), &(end.y), fdf->map[i + 1 + (fdf->row / 2)][j + (fdf->col / 2)]);
+		end.x = X(j, i + 1, fdf->alfa);
+		end.y = Y(j, i + 1, fdf->alfa);
+		iso(fdf, &(end.x), &(end.y), fdf->map[i + 1][j]);
 		ft_draw_line(fdf, start, end);
 		//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
 	}
-	if (j + 1 + fdf->col / 2 < fdf->col)
+	if (j + 1 < fdf->col)
 	{
 		//end.x = (j + 1) * LET ;
 		//end.y = i * LET;
-		end.x = X((j + 1) * LET, i * LET, fdf->angle) + (WIDTH / 2);
-		end.y = Y((j + 1) * LET, i * LET, fdf->angle) + (HEIGHT / 2);
-		iso(&(end.x), &(end.y), fdf->map[i + (fdf->row / 2)][j + 1 + (fdf->col / 2)]);
+		end.x = X(j + 1, i, fdf->alfa);
+		end.y = Y(j + 1, i, fdf->alfa);
+		iso(fdf, &(end.x), &(end.y), fdf->map[i][j + 1]);
+		ft_draw_line(fdf, start, end);
+		//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
+	}
+}
+
+void	print_two_line_ox(t_fdf *fdf, int i, int j)
+{
+	t_coor	start;
+	t_coor	end;
+
+	//start.x = j * LET;
+	//start.y = i * LET;
+	start.x = j * LET;
+	start.y = Y_OX(i, fdf->map[i][j], fdf->beta);
+	start.z = Z_OX(i, fdf->map[i][j], fdf->beta);
+	//ft_printf("1 = {%d}, 2 = [%d]\n", start.y, fdf->map[i][j]);
+	iso(fdf, &(start.x), &(start.y), start.z);
+	if (i + 1 < fdf->row)
+	{
+		//end.x = j * LET;
+		//end.y = (i + 1) * LET;
+		end.x = j * LET;
+		end.y = Y_OX(i + 1, fdf->map[i + 1][j], fdf->beta);
+		end.z = Z_OX(i + 1, fdf->map[i + 1][j], fdf->beta);
+		iso(fdf, &(end.x), &(end.y), end.z);
+		ft_draw_line(fdf, start, end);
+		//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
+	}
+	if (j + 1 < fdf->col)
+	{
+		//end.x = (j + 1) * LET ;
+		//end.y = i * LET;
+		end.x = (j + 1) * LET ;
+		end.y = Y_OX(i, fdf->map[i][j + 1], fdf->beta);
+		end.z = Z_OX(i, fdf->map[i][j + 1], fdf->beta);
+		iso(fdf, &(end.x), &(end.y), end.z);
 		ft_draw_line(fdf, start, end);
 		//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
 	}
@@ -279,7 +329,22 @@ void	put_map(t_fdf *fdf)
 	{
 		j = -1;
 		while (++j < fdf->col)
-			print_two_line(fdf, i - (fdf->row / 2), j - (fdf->col / 2));
+			print_two_line(fdf, i, j);
+	}
+	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 0, 0);
+}
+
+void	put_map_ox(t_fdf *fdf)
+{
+	int	i;
+	int	j;
+
+	i = -1;
+	while (++i < fdf->row)
+	{
+		j = -1;
+		while (++j < fdf->col)
+			print_two_line_ox(fdf, i, j);
 	}
 	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 0, 0);
 }
@@ -288,7 +353,6 @@ void	put_line(t_fdf *fdf)
 {
 	t_coor	start;
 	t_coor	end;
-	double	deg;
 
 	ft_printf("%f\n", cos(DEG(60)));
 	start.x = 0;
@@ -307,6 +371,27 @@ void	put_line(t_fdf *fdf)
 	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 0, 0);
 }
 
+void	calculation_scale(t_fdf *fdf)
+{
+	while (fdf->scale * fdf->row < HEIGHT - 200 &&
+			fdf->scale * fdf->col < WIDTH - 800)
+		fdf->scale++;
+	ft_printf("scale = {%d}\n", fdf->scale);
+//	fdf->scale = 5;
+}
+
+void	put(t_fdf *fdf)
+{
+	int i;
+
+	i = 0;
+	while (++i < 6)
+	{
+		fdf->beta += 10;
+		put_map_ox(fdf);
+	}
+}
+
 int		main(int ac, char **av)
 {
 	t_fdf fdf;
@@ -315,8 +400,10 @@ int		main(int ac, char **av)
 	init(&fdf);
 	mlx_key_hook(fdf.win_ptr, press_key, &fdf);
 	read_map(&fdf, ac, av);
+	calculation_scale(&fdf);
 	//put_line(&fdf);
-	//put_map(&fdf);
+	put(&fdf);	
+	//put_map_ox(&fdf);
 	mlx_loop(fdf.mlx_ptr);
 	return (0);
 }
