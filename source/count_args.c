@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 18:36:23 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/26 18:02:17 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/27 12:30:13 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,25 +98,25 @@ void	scale_map(t_fdf *fdf, int key)
 void	projection_iso(t_fdf *fdf)
 {
 	clear_image(fdf);
-	fdf->alfa = 0;
-	fdf->beta = 30;
-	fdf->gamma = 30;
+	fdf->alfa = 45;
+	fdf->beta = 45;
+	fdf->gamma = 45;
 	put_map(fdf);
 }
 
 void	projection_parallel(t_fdf *fdf)
 {
 	clear_image(fdf);
-	fdf->alfa = 45;
+	fdf->alfa = 0;
 	fdf->beta = 0;
-	fdf->gamma = 90;
+	fdf->gamma = 0;
 	put_map(fdf);
 }
 
 void	projection_perpendicular(t_fdf *fdf)
 {
 	clear_image(fdf);
-	fdf->alfa = 90;
+	fdf->alfa = 0;
 	fdf->beta = 0;
 	fdf->gamma = 0;
 	put_map(fdf);

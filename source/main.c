@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 11:22:14 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/26 18:02:19 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/27 12:30:10 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,8 +238,50 @@ static void iso(t_fdf *fdf, int *x, int *y, int z)
 
     prev_x = *x;
     prev_y = *y;
-    *x = (prev_x - prev_y) * cos(0.523599) + (WIDTH / 2) + fdf->dx;
-    *y = (-z * 1) + (prev_x + prev_y) * sin(0.523599) + (HEIGHT / 2) + fdf->dy;
+    *x = (prev_x - prev_y) * cos(0.523599);
+    *y = (-z) + (prev_x + prev_y) * sin(0.523599);
+}
+
+void	print_two_line_oy(t_fdf *fdf, t_coor start, t_coor end)
+{
+
+	//start.x = j * LET;
+	//start.y = i * LET;
+	start.x = X_OY(start.x, start.z, fdf->gamma) + (HEIGHT / 2) + fdf->dy; 
+	start.y += (HEIGHT / 2) + fdf->dy;
+	start.z = Z_OY(start.x, start.z, fdf->gamma);
+	//ft_printf("1 = {%d}, 2 = [%d]\n", start.y, fdf->map[i][j]);
+	//iso(fdf, &(start.x), &(start.y), start.z);
+	//end.x = j * LET;
+	//end.y = (i + 1) * LET;
+	//end.x = j * LET;
+	end.x = X_OY(end.x, end.z, fdf->gamma) + (HEIGHT / 2) + fdf->dy; 
+	end.y += (HEIGHT / 2) + fdf->dy;
+	end.z = Z_OY(end.x, end.z, fdf->gamma);
+	//iso(fdf, &(end.x), &(end.y), end.z);
+	ft_draw_line(fdf, start, end);
+	//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
+}
+void	print_two_line_ox(t_fdf *fdf, t_coor start, t_coor end)
+{
+
+	//start.x = j * LET;
+	//start.y = i * LET;
+	//start.x += (WIDTH / 2) + fdf->dx; 
+	start.y = Y_OX(start.y, start.z, fdf->beta); //+ (HEIGHT / 2) + fdf->dy;
+	start.z = Z_OX(start.y, start.z, fdf->beta);
+	//ft_printf("1 = {%d}, 2 = [%d]\n", start.y, fdf->map[i][j]);
+	//iso(fdf, &(start.x), &(start.y), start.z);
+	//end.x = j * LET;
+	//end.y = (i + 1) * LET;
+	//end.x = j * LET;
+	//end.x +=  (WIDTH / 2) + fdf->dx; 
+	end.y = Y_OX(end.y, end.z, fdf->beta);// + (HEIGHT / 2) + fdf->dy;
+	end.z = Z_OX(end.y, end.z, fdf->beta);
+	//iso(fdf, &(end.x), &(end.y), end.z);
+	print_two_line_oy(fdf, start, end);
+	//ft_draw_line(fdf, start, end);
+	//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
 }
 
 /*
@@ -255,17 +297,19 @@ void	print_two_line(t_fdf *fdf, int i, int j)
 	//start.y = i * LET;
 	start.x = X(j, i, fdf->alfa);
 	start.y = Y(j, i, fdf->alfa);
+	start.z = fdf->map[i][j];
 	//ft_printf("1 = {%d}, 2 = [%d]\n",i + (fdf->row / 2), j + (fdf->col / 2));
-	iso(fdf, &(start.x), &(start.y), fdf->map[i][j]);
+	//iso(fdf, &(start.x), &(start.y), fdf->map[i][j]);
 	if (i + 1 < fdf->row)
 	{
 		//end.x = j * LET;
 		//end.y = (i + 1) * LET;
 		end.x = X(j, i + 1, fdf->alfa);
 		end.y = Y(j, i + 1, fdf->alfa);
-		iso(fdf, &(end.x), &(end.y), fdf->map[i + 1][j]);
-		ft_draw_line(fdf, start, end);
-		//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
+		end.z = fdf->map[i + 1][j];
+		//iso(fdf, &(end.x), &(end.y), fdf->map[i + 1][j]);
+		print_two_line_ox(fdf, start, end);
+		//ft_draw_line(fdf, start, end);
 	}
 	if (j + 1 < fdf->col)
 	{
@@ -273,47 +317,13 @@ void	print_two_line(t_fdf *fdf, int i, int j)
 		//end.y = i * LET;
 		end.x = X(j + 1, i, fdf->alfa);
 		end.y = Y(j + 1, i, fdf->alfa);
-		iso(fdf, &(end.x), &(end.y), fdf->map[i][j + 1]);
-		ft_draw_line(fdf, start, end);
-		//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
+		end.z = fdf->map[i][j + 1];
+		//iso(fdf, &(end.x), &(end.y), fdf->map[i][j + 1]);
+		print_two_line_ox(fdf, start, end);
+		//ft_draw_line(fdf, start, end);
 	}
 }
 
-void	print_two_line_ox(t_fdf *fdf, int i, int j)
-{
-	t_coor	start;
-	t_coor	end;
-
-	//start.x = j * LET;
-	//start.y = i * LET;
-	start.x = j * LET;
-	start.y = Y_OX(i, fdf->map[i][j], fdf->beta);
-	start.z = Z_OX(i, fdf->map[i][j], fdf->beta);
-	//ft_printf("1 = {%d}, 2 = [%d]\n", start.y, fdf->map[i][j]);
-	iso(fdf, &(start.x), &(start.y), start.z);
-	if (i + 1 < fdf->row)
-	{
-		//end.x = j * LET;
-		//end.y = (i + 1) * LET;
-		end.x = j * LET;
-		end.y = Y_OX(i + 1, fdf->map[i + 1][j], fdf->beta);
-		end.z = Z_OX(i + 1, fdf->map[i + 1][j], fdf->beta);
-		iso(fdf, &(end.x), &(end.y), end.z);
-		ft_draw_line(fdf, start, end);
-		//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
-	}
-	if (j + 1 < fdf->col)
-	{
-		//end.x = (j + 1) * LET ;
-		//end.y = i * LET;
-		end.x = (j + 1) * LET ;
-		end.y = Y_OX(i, fdf->map[i][j + 1], fdf->beta);
-		end.z = Z_OX(i, fdf->map[i][j + 1], fdf->beta);
-		iso(fdf, &(end.x), &(end.y), end.z);
-		ft_draw_line(fdf, start, end);
-		//mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 100, 100);
-	}
-}
 
 /*
 ** Вывод на экран ортогональную  матрицу.
@@ -334,6 +344,7 @@ void	put_map(t_fdf *fdf)
 	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 0, 0);
 }
 
+/*
 void	put_map_ox(t_fdf *fdf)
 {
 	int	i;
@@ -348,7 +359,7 @@ void	put_map_ox(t_fdf *fdf)
 	}
 	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 0, 0);
 }
-
+*/
 void	put_line(t_fdf *fdf)
 {
 	t_coor	start;
@@ -388,7 +399,7 @@ void	put(t_fdf *fdf)
 	while (++i < 6)
 	{
 		fdf->beta += 10;
-		put_map_ox(fdf);
+		//put_map_ox(fdf);
 	}
 }
 

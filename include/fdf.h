@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 12:14:10 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/23 20:22:31 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/27 12:30:16 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,36 @@
 #define	WIDTH 1920
 #define	HEIGHT 1080
 
-#define	W_IMG 1000
-#define	H_IMG 500
+#define KEY_ESC		53
+#define KEY_UP		126
+#define KEY_DOWN	125
+#define KEY_PLUS	69
+#define KEY_MINUS	78
+#define KEY_H		4
+#define KEY_J		38
+#define KEY_K		40
+#define KEY_L		37
+#define KEY_Z		6
+#define KEY_X		7
+#define KEY_C		8
+#define KEY_V		9
+#define KEY_1		83
+#define KEY_2		84
+#define KEY_3		85
 
-#define	LET 50
+#define	LET fdf->scale
 #define	ANGLE 90
 #define	DEG(N) M_PI*N/180
-#define	CON 0
-#define X(A, B, C) (int)((A+CON)*cos(DEG(C))+(B+CON)*sin(DEG(C)))
-#define Y(A, B, C) (int)(-(A+CON)*sin(DEG(C))+(B+CON)*cos(DEG(C)))
+#define	ROW_2 fdf->row_2
+#define	COL_2 fdf->col_2
+#define X(A, B, C) (int)(((A)-COL_2)*LET*cos(DEG(C))-((B)-ROW_2)*LET*sin(DEG(C)))
+#define Y(A, B, C) (int)(((A)-COL_2)*(1)*LET*sin(DEG(C))+((B)-ROW_2)*LET*cos(DEG(C)))
+
+#define Y_OX(A, B, C) (int)(((A))*cos(DEG(C))+((B))*sin(DEG(C)))
+#define Z_OX(A, B, C) (int)(((A))*(-1)*sin(DEG(C))+((B))*cos(DEG(C)))
+
+#define X_OY(A, B, C) (int)(((A))*cos(DEG(C))+((B))*sin(DEG(C)))
+#define Z_OY(A, B, C) (int)(((A))*(-1)*sin(DEG(C))+((B))*cos(DEG(C)))
 
 # define ABS(N) ((N<0)?(-N):(N))
 
@@ -43,12 +64,19 @@ typedef struct	s_fdf
 	char		*str;
 	char		**arr;
 	char		*data_adr;
-	int			col;
+	int			scale;
 	int			row;
+	int			col;
+	int			dx;
+	int			dy;	
+	int			row_2;
+	int			col_2;
 	int			bits_adr;
 	int			size_adr;
 	int			endian;
-	int			angle;
+	int			alfa;
+	int			beta;
+	int			gamma;
 	int			color;
 }				t_fdf;
 
@@ -56,6 +84,7 @@ typedef struct		s_coor
 {
 	int			x;
 	int			y;
+	int			z;
 }					t_coor;
 
 /*
