@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 12:14:10 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/27 12:30:16 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/27 17:28:51 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,10 @@
 #define	HEIGHT 1080
 
 #define KEY_ESC		53
-#define KEY_UP		126
+#define KEY_LEFT	123
+#define KEY_RIGHT	124
 #define KEY_DOWN	125
+#define KEY_UP		126
 #define KEY_PLUS	69
 #define KEY_MINUS	78
 #define KEY_H		4
@@ -42,13 +44,16 @@
 #define	LET fdf->scale
 #define	ANGLE 90
 #define	DEG(N) M_PI*N/180
+
 #define	ROW_2 fdf->row_2
 #define	COL_2 fdf->col_2
-#define X(A, B, C) (int)(((A)-COL_2)*LET*cos(DEG(C))-((B)-ROW_2)*LET*sin(DEG(C)))
-#define Y(A, B, C) (int)(((A)-COL_2)*(1)*LET*sin(DEG(C))+((B)-ROW_2)*LET*cos(DEG(C)))
+#define	DZ fdf->dz
 
-#define Y_OX(A, B, C) (int)(((A))*cos(DEG(C))+((B))*sin(DEG(C)))
-#define Z_OX(A, B, C) (int)(((A))*(-1)*sin(DEG(C))+((B))*cos(DEG(C)))
+#define Y_OX(A, B, C) (int)((((A)-ROW_2)*LET)*cos(DEG(C))+((B)*DZ)*sin(DEG(C)))
+#define Z_OX(A, B, C) (int)((((A)-ROW_2)*LET)*(-1)*sin(DEG(C))+((B)*DZ)*cos(DEG(C)))
+
+#define X_OZ(A, B, C) (int)(((A))*cos(DEG(C))-((B))*sin(DEG(C)))
+#define Y_OZ(A, B, C) (int)(((A))*(1)*sin(DEG(C))+((B))*cos(DEG(C)))
 
 #define X_OY(A, B, C) (int)(((A))*cos(DEG(C))+((B))*sin(DEG(C)))
 #define Z_OY(A, B, C) (int)(((A))*(-1)*sin(DEG(C))+((B))*cos(DEG(C)))
@@ -69,6 +74,7 @@ typedef struct	s_fdf
 	int			col;
 	int			dx;
 	int			dy;	
+	int			dz;
 	int			row_2;
 	int			col_2;
 	int			bits_adr;

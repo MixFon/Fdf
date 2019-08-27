@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 18:36:23 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/27 12:30:13 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/27 17:28:47 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void	init(t_fdf *fdf)
 	fdf->col = 0;
 	fdf->dx = 0;
 	fdf->dy = 0;
+	fdf->dz = 3;
 	fdf->row_2 = 0;
 	fdf->col_2 = 0;
 	fdf->endian = 0;
@@ -53,6 +54,7 @@ void	increase_ten(t_fdf *fdf, int *inc, int val)
 {
 	clear_image(fdf);
 	*inc += val;
+	ft_printf("inc = [%d]\n", *inc);
 	put_map(fdf);
 }
 
@@ -60,6 +62,7 @@ void	decrease_ten(t_fdf *fdf, int *dec, int val)
 {
 	clear_image(fdf);
 	*dec -= val;
+	ft_printf("dec = [%d]\n", *dec);
 	put_map(fdf);
 }
 
@@ -81,10 +84,18 @@ void	move_map(t_fdf *fdf, int key)
 
 void	rotation_map(t_fdf *fdf, int key)
 {
-	if (key == KEY_UP)
-		increase_ten(fdf, &fdf->alfa, 10);
-	else if (key == KEY_DOWN)
-	   	decrease_ten(fdf, &fdf->alfa, 10);
+	if (key == KEY_DOWN)
+		increase_ten(fdf, &fdf->beta, 10);
+	else if (key == KEY_UP)
+	   	decrease_ten(fdf, &fdf->beta, 10);
+	else if (key == KEY_RIGHT)
+	   	increase_ten(fdf, &fdf->gamma, 10);
+	else if (key == KEY_LEFT)
+	   	decrease_ten(fdf, &fdf->gamma, 10);
+	else if (key == KEY_Z)
+			increase_ten(fdf, &fdf->alfa, 10);
+	else if (key == KEY_X)
+			decrease_ten(fdf, &fdf->alfa, 10);
 }
 
 void	scale_map(t_fdf *fdf, int key)
@@ -98,9 +109,9 @@ void	scale_map(t_fdf *fdf, int key)
 void	projection_iso(t_fdf *fdf)
 {
 	clear_image(fdf);
-	fdf->alfa = 45;
-	fdf->beta = 45;
-	fdf->gamma = 45;
+	fdf->alfa = 20;
+	fdf->beta = -50;
+	fdf->gamma = -30;
 	put_map(fdf);
 }
 
@@ -108,7 +119,7 @@ void	projection_parallel(t_fdf *fdf)
 {
 	clear_image(fdf);
 	fdf->alfa = 0;
-	fdf->beta = 0;
+	fdf->beta = -90;
 	fdf->gamma = 0;
 	put_map(fdf);
 }
@@ -132,12 +143,22 @@ void	projection_view(t_fdf *fdf, int key)
 		projection_perpendicular(fdf);
 }
 
+void	len_dz(t_fdf *fdf, int key)
+{
+	if (key == KEY_C)
+		increase_ten(fdf, &fdf->dz, 1);
+	else if (key == KEY_V)
+		decrease_ten(fdf, &fdf->dz, 1);
+}
+
 int		press_key(int key, t_fdf *fdf)
 {
 	ft_printf("key {%d}\n", key);
 	if (key == KEY_ESC)
 		sys_err("Normal exit.\n");
-	else if (key == KEY_UP || key == KEY_DOWN)
+	else if (key == KEY_UP || key == KEY_DOWN ||
+			key == KEY_RIGHT || key == KEY_LEFT ||
+			key == KEY_Z || key == KEY_X)
 		rotation_map(fdf, key);
 	else if (key == KEY_PLUS || key == KEY_MINUS)
 		scale_map(fdf, key);
@@ -145,20 +166,8 @@ int		press_key(int key, t_fdf *fdf)
 		move_map(fdf, key);
 	else if (key == KEY_1 || key == KEY_2 || key == KEY_3)
 		projection_view(fdf, key);
-	else if (key == KEY_Z || key == KEY_X)
-	{
-		if (key == KEY_Z)
-			increase_ten(fdf, &fdf->gamma, 10);
-		if (key == KEY_X)
-			decrease_ten(fdf, &fdf->gamma, 10);
-	}
 	else if (key == KEY_C || key == KEY_V)
-	{
-		if (key == KEY_C)
-			increase_ten(fdf, &fdf->beta, 10);
-		if (key == KEY_V)
-			decrease_ten(fdf, &fdf->beta, 10);
-	}
+		len_dz(fdf, key);
 	return (0);
 }
 
