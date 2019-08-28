@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 18:36:23 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/27 17:28:47 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/28 17:08:10 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,13 @@ void	sys_err(char *err)
 
 void	clear_image(t_fdf *fdf)
 {
-	fdf->color = 0;
-	put_map(fdf);
-	fdf->color = -1;
+	char	*temp;
+	int		i;
+
+	temp = fdf->data_adr;
+	i = -1;
+	while (++i < WIDTH * 4 * HEIGHT)
+		temp[i] = 0;
 }
 
 void	increase_ten(t_fdf *fdf, int *inc, int val)

@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 11:22:14 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/27 17:28:48 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/28 17:08:11 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,26 +171,61 @@ void	read_map(t_fdf *fdf, int ac, char **av)
 ** Функция рисует линию.
 */
 
-void	put_pixel_adr(t_fdf *fdf, int x, int y)
+void	put_pixel_adr(t_fdf *fdf, t_coor point)
 {
 	int i;
 
-	if (x >= WIDTH || y >= HEIGHT || x <= 0 || y <= 0)
+	if (point.x >= WIDTH || point.y >= HEIGHT || point.x <= 0 || point.y <= 0)
 		return ;
-	i = (x * fdf->bits_adr / 8) + (y * fdf->size_adr);
-	fdf->data_adr[i] = fdf->color;
-	fdf->data_adr[++i] = fdf->color >> 8;
-	fdf->data_adr[++i] = fdf->color >> 16;
+	i = (point.x * fdf->bits_adr / 8) + (point.y * fdf->size_adr);
+	fdf->data_adr[i] = point.color;
+	fdf->data_adr[++i] = point.color >> 8;
+	fdf->data_adr[++i] = point.color >> 16;
 	fdf->data_adr[++i] = 0;
 }
 
-void	ft_draw_line_source(t_coor *delta, t_coor *sign, t_coor point1,
-		t_coor point2)
+t_coor	ft_draw_line_source(t_coor *delta,
+		t_coor *sign, t_coor point1, t_coor point2)
 {
 	(*delta).x = ABS((point2.x - point1.x));
 	(*delta).y = ABS((point2.y - point1.y));
 	(*sign).x = (point1.x < point2.x) ? 1 : -1;
 	(*sign).y = (point1.y < point2.y) ? 1 : -1;
+	return (point1);
+}
+
+double percent(int start, int end, int current)
+{
+    double placement;
+    double distance;
+
+    placement = current - start;
+    distance = end - start;
+    return ((distance == 0) ? 1.0 : (placement / distance));
+}
+
+int get_light(int start, int end, double percentage)
+{
+	return ((int)((1 - percentage) * start + percentage * end));
+}
+
+int get_color(t_coor current, t_coor start, t_coor end, t_coor delta)
+{
+    int     red;
+    int     green;
+    int     blue;
+    double  percentage;
+
+    if (current.color == end.color)
+		return (current.color);
+    if (delta.x > delta.y)
+        percentage = percent(start.x, end.x, current.x);
+    else
+        percentage = percent(start.y, end.y, current.y);
+    red = get_light((start.color >> 16) & 0xFF, (end.color >> 16) & 0xFF, percentage);
+    green = get_light((start.color >> 8) & 0xFF, (end.color >> 8) & 0xFF, percentage);
+    blue = get_light(start.color & 0xFF, end.color & 0xFF, percentage);
+    return ((red << 16) | (green << 8) | blue);
 }
 
 /*
@@ -200,28 +235,30 @@ void	ft_draw_line_source(t_coor *delta, t_coor *sign, t_coor point1,
 void	ft_draw_line(t_fdf *fdf, t_coor point1,
 		t_coor point2)
 {
-	t_coor		delta;
-	t_coor		sign;
+	t_coor	delta;
+	t_coor	sign;
+	t_coor	point;
 	int		error;
 	int		error2;
 
-	ft_draw_line_source(&delta, &sign, point1, point2);
+	point = ft_draw_line_source(&delta, &sign, point1, point2);
 	error = delta.x - delta.y;
-	put_pixel_adr(fdf, point2.x, point2.y);
-	while (point1.x != point2.x || point1.y != point2.y)
+	put_pixel_adr(fdf, point2);
+	while (point.x != point2.x || point.y != point2.y)
 	{
-		put_pixel_adr(fdf, point1.x, point1.y);
+		put_pixel_adr(fdf, point);
 		error2 = error * 2;
 		if (error2 > -delta.y)
 		{
 			error -= delta.y;
-			point1.x += sign.x;
+			point.x += sign.x;
 		}
 		if (error2 < delta.x)
 		{
 			error += delta.x;
-			point1.y += sign.y;
+			point.y += sign.y;
 		}
+		point.color = get_color(point, point1, point2, delta);
 	}
 }
 
@@ -236,29 +273,44 @@ static void iso(t_fdf *fdf, int *x, int *y, int z)
 
     prev_x = *x;
     prev_y = *y;
-    *x = (prev_x - prev_y) * cos(DEG(fdf->alfa)) + (WIDTH / 2) + fdf->dx;
-    *y = (-z * LET) + (prev_x + prev_y) * sin(DEG(fdf->gamma)) + (HEIGHT / 2) + fdf->dy;
+    *x = (prev_x - prev_y) * cos(0.523599);
+    *y = (-z) + (prev_x + prev_y) * sin(0.523599);
+}
+
+void	proe(t_fdf *fdf, t_coor *point)
+{
+	int	zk;	
+	int	zp;
+
+	zk = 1500;
+	zp = 100;
+	point->x = (point->x * (zk - zp)) / (zk - point->z);
+	point->y = (point->y * (zk - zp)) / (zk - point->z);
+	point->z = point->z - zp;
 }
 
 void	print_two_line_oy(t_fdf *fdf, t_coor start, t_coor end)
 {
-
+	proe(fdf, &start);
 	start.x = X_OY(start.x, start.z, fdf->gamma) + (WIDTH / 2) + fdf->dx; 
 	start.y += (HEIGHT / 2) + fdf->dy;
 	start.z = Z_OY(start.x, start.z, fdf->gamma);
+	proe(fdf, &end);
+	//iso(fdf, &start.x, &start.y, start.z);
 	end.x = X_OY(end.x, end.z, fdf->gamma) + (WIDTH / 2) + fdf->dx; 
 	end.y += (HEIGHT / 2) + fdf->dy;
 	end.z = Z_OY(end.x, end.z, fdf->gamma);
+	//iso(fdf, &end.x, &end.y, end.z);
 	ft_draw_line(fdf, start, end);
 }
 
 void	print_two_line_oz(t_fdf *fdf, t_coor start, t_coor end)
 {
-
 	start.x = X_OZ(start.x, start.y, fdf->alfa);// + (WIDTH / 2) + fdf->dx; 
 	start.y = Y_OZ(start.x, start.y, fdf->alfa);// + (HEIGHT / 2) + fdf->dy;
 	end.x = X_OZ(end.x, end.y, fdf->alfa);// + (WIDTH / 2) + fdf->dx; 
 	end.y = Y_OZ(end.x, end.y, fdf->alfa);// + (HEIGHT / 2) + fdf->dy;
+	//ft_draw_line(fdf, start, end);
 	print_two_line_oy(fdf, start, end);
 }
 
@@ -274,18 +326,42 @@ void	print_two_line_ox(t_fdf *fdf, int i, int j)
 	start.x = (j - COL_2) * LET;
 	start.y = Y_OX(i, fdf->map[i][j], fdf->beta);
 	start.z = Z_OX(i, fdf->map[i][j], fdf->beta);
+	start.color = COLOR >> fdf->map[i][j];
+	end.color = COLOR >> fdf->map[i][j];
 	if (i + 1 < fdf->row)
 	{
 		end.x = (j - COL_2) * LET;
 		end.y = Y_OX(i + 1, fdf->map[i + 1][j], fdf->beta);
 		end.z = Z_OX(i + 1, fdf->map[i + 1][j], fdf->beta);
+		if (fdf->map[i][j] > fdf->map[i + 1][j])
+		{
+			start.color = COLOR >> fdf->map[i][j];
+			end.color = COLOR >> fdf->map[i + 1][j];
+		}
+		if (fdf->map[i][j] < fdf->map[i + 1][j])
+		{
+			start.color = COLOR >> fdf->map[i][j];
+			end.color = COLOR >> fdf->map[i + 1][j];
+		}
 		print_two_line_oz(fdf, start, end);
 	}
+	start.color = COLOR >> fdf->map[i][j];
+	end.color = COLOR >> fdf->map[i][j];
 	if (j + 1 < fdf->col)
 	{
 		end.x = (j + 1 - COL_2) * LET ;
 		end.y = Y_OX(i, fdf->map[i][j + 1], fdf->beta);
 		end.z = Z_OX(i, fdf->map[i][j + 1], fdf->beta);
+		if (fdf->map[i][j] > fdf->map[i][j + 1])
+		{
+			start.color = COLOR >> fdf->map[i][j];
+			end.color = COLOR >> fdf->map[i][j + 1];
+		}
+		if (fdf->map[i][j] < fdf->map[i][j + 1])
+		{
+			start.color = COLOR >> fdf->map[i][j];
+			end.color = COLOR >> fdf->map[i][j + 1];
+		}
 		print_two_line_oz(fdf, start, end);
 	}
 }
