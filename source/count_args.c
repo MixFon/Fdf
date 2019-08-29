@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 18:36:23 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/28 17:08:10 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/29 16:47:36 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,9 @@ void	init(t_fdf *fdf)
 	fdf->col = 0;
 	fdf->dx = 0;
 	fdf->dy = 0;
-	fdf->dz = 3;
+	fdf->dz = 1;
+	fdf->zk = 9000;
+	fdf->zp = 1000;
 	fdf->row_2 = 0;
 	fdf->col_2 = 0;
 	fdf->endian = 0;
@@ -155,6 +157,18 @@ void	len_dz(t_fdf *fdf, int key)
 		decrease_ten(fdf, &fdf->dz, 1);
 }
 
+void	perspective_size(t_fdf *fdf, int key)
+{
+	if (key == KEY_A)
+		increase_ten(fdf, &fdf->zp, 100);
+	else if (key == KEY_S)
+		decrease_ten(fdf, &fdf->zp, 100);
+	else if (key == KEY_D)
+		increase_ten(fdf, &fdf->zk, 100);
+	else if (key == KEY_F)
+		decrease_ten(fdf, &fdf->zk, 100);
+}
+
 int		press_key(int key, t_fdf *fdf)
 {
 	ft_printf("key {%d}\n", key);
@@ -172,6 +186,8 @@ int		press_key(int key, t_fdf *fdf)
 		projection_view(fdf, key);
 	else if (key == KEY_C || key == KEY_V)
 		len_dz(fdf, key);
+	else if (key == KEY_A || key == KEY_S || key == KEY_D || key == KEY_F)
+		perspective_size(fdf, key);
 	return (0);
 }
 

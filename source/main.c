@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 11:22:14 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/28 17:08:11 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/29 16:47:34 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,55 +262,37 @@ void	ft_draw_line(t_fdf *fdf, t_coor point1,
 	}
 }
 
-/*
-** Пересчитывает координаты для идомутрического вида.
-*/
-
-static void iso(t_fdf *fdf, int *x, int *y, int z)
+void	perspective(t_fdf *fdf, t_coor *point)
 {
-    int prev_x;
-    int prev_y;
+	int		zk;	
+	int		zp;
 
-    prev_x = *x;
-    prev_y = *y;
-    *x = (prev_x - prev_y) * cos(0.523599);
-    *y = (-z) + (prev_x + prev_y) * sin(0.523599);
-}
-
-void	proe(t_fdf *fdf, t_coor *point)
-{
-	int	zk;	
-	int	zp;
-
-	zk = 1500;
-	zp = 100;
-	point->x = (point->x * (zk - zp)) / (zk - point->z);
-	point->y = (point->y * (zk - zp)) / (zk - point->z);
+	zk = fdf->zk;
+	zp = fdf->zp;
+	if (point->z == zk)
+		return ;
+	point->x = point->x * (zk - zp) / (zk - point->z) + (WIDTH / 2) + fdf->dx;
+	point->y = point->y * (zk - zp) / (zk - point->z) + (HEIGHT / 2) + fdf->dy;
 	point->z = point->z - zp;
 }
 
 void	print_two_line_oy(t_fdf *fdf, t_coor start, t_coor end)
 {
-	proe(fdf, &start);
-	start.x = X_OY(start.x, start.z, fdf->gamma) + (WIDTH / 2) + fdf->dx; 
-	start.y += (HEIGHT / 2) + fdf->dy;
+	start.x = X_OY(start.x, start.z, fdf->gamma); 
 	start.z = Z_OY(start.x, start.z, fdf->gamma);
-	proe(fdf, &end);
-	//iso(fdf, &start.x, &start.y, start.z);
-	end.x = X_OY(end.x, end.z, fdf->gamma) + (WIDTH / 2) + fdf->dx; 
-	end.y += (HEIGHT / 2) + fdf->dy;
+	perspective(fdf, &start);
+	end.x = X_OY(end.x, end.z, fdf->gamma); 
 	end.z = Z_OY(end.x, end.z, fdf->gamma);
-	//iso(fdf, &end.x, &end.y, end.z);
+	perspective(fdf, &end);
 	ft_draw_line(fdf, start, end);
 }
 
 void	print_two_line_oz(t_fdf *fdf, t_coor start, t_coor end)
 {
-	start.x = X_OZ(start.x, start.y, fdf->alfa);// + (WIDTH / 2) + fdf->dx; 
-	start.y = Y_OZ(start.x, start.y, fdf->alfa);// + (HEIGHT / 2) + fdf->dy;
-	end.x = X_OZ(end.x, end.y, fdf->alfa);// + (WIDTH / 2) + fdf->dx; 
-	end.y = Y_OZ(end.x, end.y, fdf->alfa);// + (HEIGHT / 2) + fdf->dy;
-	//ft_draw_line(fdf, start, end);
+	start.x = X_OZ(start.x, start.y, fdf->alfa); 
+	start.y = Y_OZ(start.x, start.y, fdf->alfa);
+	end.x = X_OZ(end.x, end.y, fdf->alfa); 
+	end.y = Y_OZ(end.x, end.y, fdf->alfa);
 	print_two_line_oy(fdf, start, end);
 }
 
@@ -327,41 +309,20 @@ void	print_two_line_ox(t_fdf *fdf, int i, int j)
 	start.y = Y_OX(i, fdf->map[i][j], fdf->beta);
 	start.z = Z_OX(i, fdf->map[i][j], fdf->beta);
 	start.color = COLOR >> fdf->map[i][j];
-	end.color = COLOR >> fdf->map[i][j];
 	if (i + 1 < fdf->row)
 	{
 		end.x = (j - COL_2) * LET;
 		end.y = Y_OX(i + 1, fdf->map[i + 1][j], fdf->beta);
 		end.z = Z_OX(i + 1, fdf->map[i + 1][j], fdf->beta);
-		if (fdf->map[i][j] > fdf->map[i + 1][j])
-		{
-			start.color = COLOR >> fdf->map[i][j];
-			end.color = COLOR >> fdf->map[i + 1][j];
-		}
-		if (fdf->map[i][j] < fdf->map[i + 1][j])
-		{
-			start.color = COLOR >> fdf->map[i][j];
-			end.color = COLOR >> fdf->map[i + 1][j];
-		}
+		end.color = COLOR >> fdf->map[i + 1][j];
 		print_two_line_oz(fdf, start, end);
 	}
-	start.color = COLOR >> fdf->map[i][j];
-	end.color = COLOR >> fdf->map[i][j];
 	if (j + 1 < fdf->col)
 	{
 		end.x = (j + 1 - COL_2) * LET ;
 		end.y = Y_OX(i, fdf->map[i][j + 1], fdf->beta);
 		end.z = Z_OX(i, fdf->map[i][j + 1], fdf->beta);
-		if (fdf->map[i][j] > fdf->map[i][j + 1])
-		{
-			start.color = COLOR >> fdf->map[i][j];
-			end.color = COLOR >> fdf->map[i][j + 1];
-		}
-		if (fdf->map[i][j] < fdf->map[i][j + 1])
-		{
-			start.color = COLOR >> fdf->map[i][j];
-			end.color = COLOR >> fdf->map[i][j + 1];
-		}
+		end.color = COLOR >> fdf->map[i][j + 1];
 		print_two_line_oz(fdf, start, end);
 	}
 }
@@ -397,7 +358,6 @@ int		main(int ac, char **av)
 {
 	t_fdf fdf;
 
-	ft_printf("ac = {%d}\n", ac);
 	init(&fdf);
 	mlx_key_hook(fdf.win_ptr, press_key, &fdf);
 	read_map(&fdf, ac, av);

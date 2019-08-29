@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 12:14:10 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/27 17:28:51 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/29 16:47:38 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,10 @@
 #define KEY_Z		6
 #define KEY_X		7
 #define KEY_C		8
+#define KEY_A		0
+#define KEY_S		1
+#define KEY_D		2
+#define KEY_F		3
 #define KEY_V		9
 #define KEY_1		83
 #define KEY_2		84
@@ -48,6 +52,7 @@
 #define	ROW_2 fdf->row_2
 #define	COL_2 fdf->col_2
 #define	DZ fdf->dz
+#define	COLOR 15728640 
 
 #define Y_OX(A, B, C) (int)((((A)-ROW_2)*LET)*cos(DEG(C))+((B)*DZ)*sin(DEG(C)))
 #define Z_OX(A, B, C) (int)((((A)-ROW_2)*LET)*(-1)*sin(DEG(C))+((B)*DZ)*cos(DEG(C)))
@@ -75,6 +80,8 @@ typedef struct	s_fdf
 	int			dx;
 	int			dy;	
 	int			dz;
+	int			zk;
+	int			zp;
 	int			row_2;
 	int			col_2;
 	int			bits_adr;
@@ -91,6 +98,7 @@ typedef struct		s_coor
 	int			x;
 	int			y;
 	int			z;
+	int			color;
 }					t_coor;
 
 /*
