@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 11:22:14 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/29 16:47:34 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/29 17:32:37 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -327,6 +327,19 @@ void	print_two_line_ox(t_fdf *fdf, int i, int j)
 	}
 }
 
+void	put_strings(t_fdf *fdf)
+{
+	char	zoom[] = "Zoom        + -";
+	char	move[] = "Move        H J K L";
+	char	rotate[] = "Rotate      UP RIGHT LEFT DOWN";
+	char	camera[] = "Kamera      D F";
+
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, 50, 100, YELLOW, zoom);	
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, 50, 130, YELLOW, move);	
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, 50, 160, YELLOW, rotate);	
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, 50, 190, YELLOW, camera);	
+
+}
 /*
 ** Вывод на экран ортогональную  матрицу.
 */
@@ -344,6 +357,7 @@ void	put_map(t_fdf *fdf)
 			print_two_line_ox(fdf, i, j);
 	}
 	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img_ptr, 0, 0);
+	put_strings(fdf);
 }
 
 void	calculation_scale(t_fdf *fdf)
