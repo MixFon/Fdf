@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 12:14:10 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/29 16:47:38 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/30 10:38:48 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,13 @@
 #define KEY_D		2
 #define KEY_F		3
 #define KEY_V		9
+#define KEY_Q		12
 #define KEY_1		83
 #define KEY_2		84
 #define KEY_3		85
 
 #define	LET fdf->scale
-#define	ANGLE 90
+#define	YELLOW 0xFFFFF0 
 #define	DEG(N) M_PI*N/180
 
 #define	ROW_2 fdf->row_2
@@ -82,6 +83,7 @@ typedef struct	s_fdf
 	int			dz;
 	int			zk;
 	int			zp;
+	int			bl;
 	int			row_2;
 	int			col_2;
 	int			bits_adr;

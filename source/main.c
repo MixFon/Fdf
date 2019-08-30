@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 11:22:14 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/29 17:32:37 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/30 10:38:51 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,8 +271,13 @@ void	perspective(t_fdf *fdf, t_coor *point)
 	zp = fdf->zp;
 	if (point->z == zk)
 		return ;
-	point->x = point->x * (zk - zp) / (zk - point->z) + (WIDTH / 2) + fdf->dx;
-	point->y = point->y * (zk - zp) / (zk - point->z) + (HEIGHT / 2) + fdf->dy;
+	if (fdf->bl)
+	{
+		point->x = point->x * (zk - zp) / (zk - point->z);
+		point->y = point->y * (zk - zp) / (zk - point->z);
+	}
+	point->x += (WIDTH / 2) + fdf->dx;
+	point->y += (HEIGHT / 2) + fdf->dy;
 	point->z = point->z - zp;
 }
 
@@ -280,9 +285,9 @@ void	print_two_line_oy(t_fdf *fdf, t_coor start, t_coor end)
 {
 	start.x = X_OY(start.x, start.z, fdf->gamma); 
 	start.z = Z_OY(start.x, start.z, fdf->gamma);
-	perspective(fdf, &start);
 	end.x = X_OY(end.x, end.z, fdf->gamma); 
 	end.z = Z_OY(end.x, end.z, fdf->gamma);
+	perspective(fdf, &start);
 	perspective(fdf, &end);
 	ft_draw_line(fdf, start, end);
 }
@@ -329,16 +334,30 @@ void	print_two_line_ox(t_fdf *fdf, int i, int j)
 
 void	put_strings(t_fdf *fdf)
 {
-	char	zoom[] = "Zoom        + -";
-	char	move[] = "Move        H J K L";
-	char	rotate[] = "Rotate      UP RIGHT LEFT DOWN";
-	char	camera[] = "Kamera      D F";
+	char	*massage[20];
+	int		i;
+	int		coor_x;
+	int		coor_y;
 
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, 50, 100, YELLOW, zoom);	
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, 50, 130, YELLOW, move);	
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, 50, 160, YELLOW, rotate);	
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, 50, 190, YELLOW, camera);	
-
+	i = -1;
+	coor_y = 130;
+	coor_x = 50;
+	massage[0] = "Zoom               + -";
+	massage[1] = "Move               H J K L";
+	massage[2] = "Rotate             UP RIGHT LEFT DOWN";
+	massage[3] = "Kamera             D F";
+	massage[4] = "Projection         A S";
+	massage[5] = "Height of peaks    C V";
+	massage[6] = "Perspective        Q (off/on)";
+	massage[7] = "Views:";
+	massage[8] = "       isometry    1";
+	massage[9] = "       parallel    2";
+	massage[10] = "       normal      3";
+	while (++i < 10)
+	{
+		mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, coor_x, coor_y, YELLOW, massage[i]);	
+		coor_y += 30;
+	}
 }
 /*
 ** Вывод на экран ортогональную  матрицу.

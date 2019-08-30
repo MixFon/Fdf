@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 18:36:23 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/29 17:32:38 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/30 10:38:49 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void	init(t_fdf *fdf)
 	fdf->dx = 0;
 	fdf->dy = 0;
 	fdf->dz = 1;
+	fdf->bl = 1;
 	fdf->zk = 9000;
 	fdf->zp = 1000;
 	fdf->row_2 = 0;
@@ -188,6 +189,12 @@ int		press_key(int key, t_fdf *fdf)
 		len_dz(fdf, key);
 	else if (key == KEY_A || key == KEY_S || key == KEY_D || key == KEY_F)
 		perspective_size(fdf, key);
+	else if (key == KEY_Q)
+	{
+		clear_image(fdf);
+		fdf->bl = !(fdf->bl);
+		put_map(fdf);
+	}
 	return (0);
 }
 
