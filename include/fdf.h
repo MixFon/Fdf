@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 12:14:10 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/30 16:57:16 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/30 17:15:41 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ void			ft_draw_line(t_fdf *fdf, t_coor point1, t_coor point2);
 /*
 ** File put_pixel_adr.c
 */
-void			count_args(int ac, char **av);
+void			count_args(int ac);
 void			inversion(t_fdf *fdf, int *inv);
 void			clear_image(t_fdf *fdf);
 void			sys_err(char *err);
@@ -143,7 +143,7 @@ void			put_pixel_adr(t_fdf *fdf, t_coor point);
 */
 void			perspective(t_fdf *fdf, t_coor *point);
 void			print_two_line_oy(t_fdf *fdf, t_coor start, t_coor end);
-int				skip_point(t_fdf *fdf, t_coor point);
+int				skip_point(t_coor point);
 void			print_two_line_oz(t_fdf *fdf, t_coor start, t_coor end);
 void			print_two_line_ox(t_fdf *fdf, int i, int j);
 /*

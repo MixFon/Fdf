@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/20 11:22:14 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/30 16:20:42 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/30 17:16:11 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	read_map(t_fdf *fdf, int ac, char **av)
 {
 	int		fd;
 
-	count_args(ac, av);
+	count_args(ac);
 	if ((fd = open(av[ac - 1], O_RDONLY, 0)) == -1)
 		sys_err("File not found.\n");
 	one_big_string(fdf, fd);

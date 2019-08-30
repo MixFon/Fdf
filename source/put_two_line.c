@@ -6,7 +6,7 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/30 16:00:56 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/30 16:57:14 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/30 17:15:17 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	print_two_line_oy(t_fdf *fdf, t_coor start, t_coor end)
 	ft_draw_line(fdf, start, end);
 }
 
-int		skip_point(t_fdf *fdf, t_coor point)
+int		skip_point(t_coor point)
 {
 	if (point.x > WIDTH * 0.75 || point.x < -WIDTH * 0.75)
 		return (1);
@@ -55,11 +55,11 @@ void	print_two_line_oz(t_fdf *fdf, t_coor start, t_coor end)
 {
 	start.x = X_OZ(start.x, start.y, fdf->alfa);
 	start.y = Y_OZ(start.x, start.y, fdf->alfa);
-	if (skip_point(fdf, start))
+	if (skip_point(start))
 		return ;
 	end.x = X_OZ(end.x, end.y, fdf->alfa);
 	end.y = Y_OZ(end.x, end.y, fdf->alfa);
-	if (skip_point(fdf, end))
+	if (skip_point(end))
 		return ;
 	print_two_line_oy(fdf, start, end);
 }

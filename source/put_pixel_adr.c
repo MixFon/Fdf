@@ -6,13 +6,13 @@
 /*   By: widraugr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/30 15:56:12 by widraugr          #+#    #+#             */
-/*   Updated: 2019/08/30 16:25:15 by widraugr         ###   ########.fr       */
+/*   Updated: 2019/08/30 17:15:43 by widraugr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/fdf.h"
 
-void	count_args(int ac, char **av)
+void	count_args(int ac)
 {
 	if (ac == 1)
 		sys_err("Too few arguments.\n\nUse ./fdf name_map.fdf\n");
