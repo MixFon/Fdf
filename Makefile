@@ -6,7 +6,7 @@
 #    By: widraugr <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/08/30 17:00:55 by widraugr          #+#    #+#              #
-#    Updated: 2019/08/30 17:13:12 by widraugr         ###   ########.fr        #
+#    Updated: 2019/08/30 17:27:37 by widraugr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,9 +42,9 @@ $(NAME):
 	make -C ./libft
 	gcc $(FLAGS) $(HFILES) -c $(RC_COMPL)
 	gcc $(FLAGS) $(OBJ) $(FLAGSMLX) $(FLAGSPRINTF) -o $(NAME)
+	make clean -C ./libft
 
 clean:
-	make clean -C ./libft
 	/bin/rm -f $(OBJ)
 
 fclean: clean
